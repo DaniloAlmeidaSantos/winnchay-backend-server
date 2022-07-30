@@ -3,6 +3,9 @@ const router = express.Router();
 
 const DrawGames = require("../service/DrawGamesService");
 const GameDTO = require('../model/dto/GameDTO');
+const Log4js = require('log4js');
+var logger = Log4js.getLogger();
+logger.level = "info";
 
 
 /*
@@ -19,29 +22,28 @@ router.get('/championship/results', async (req, res) => {
 /*
 * Path for creating championships
 * */
-router.post('/championship/shuffle/games', async (req, res) => {
-    // const { userid } = req.params;
-    const userId = 1;
-    const { idChamp, idTeam1, idTeam2, gameResult1, gameResult2, gameDate, gameRound } = req.body;
+router.post('/championship/shuffle/games/:id', async (req, res) => {
+    const { userid } = req.params.id;
+    const { idChamp } = req.body;
 
-    let gameDTO = new GameDTO(idChamp, idTeam1, idTeam2, gameResult1, gameResult2, gameDate, gameRound);
+    const gameDTO = new GameDTO();
+    gameDTO.gameIdChamp = idChamp;
 
     let drawGamesService = new DrawGames();
-    
+
     try {
-        const response = await drawGamesService.sortitionGames(gameDTO, userId).catch(err => console.log(err));
+        const response = await drawGamesService.sortitionGames(gameDTO, userid);
 
         if (response[0]) {
-            res.status(202).json({gamesShuflled: response[1]});
+            res.status(202).json({ gamesShuflled: response[1] });
         } else {
-            res.status(404);
+            console.log(response[0])
+            res.status(404).json({ message: response[1] });
         }
-        
     } catch (error) {
-        console.log(error);
-        res.status(500);
+        logger.error(`Occurred error in controller for shuffle games: ${error}`);
+        res.status(500).json({message: "Error for shuffle games", error: error});
     }
-
 });
 
 module.exports = router;

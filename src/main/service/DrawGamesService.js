@@ -1,10 +1,9 @@
 const GameDTO = require('../model/dto/GameDTO');
 const UsersRepository = require('../repositories/UsersRepository');
 const GameRepository = require('../repositories/GameRepository');
-
-// utils
-const DateUtils = require('../utils/DateUtils');
-const SortitionUtils = require('../utils/SortitionUtils');
+const Log4js = require('log4js');
+var logger = Log4js.getLogger();
+logger.level = "info";
 
 class DrawGames {
 
@@ -16,17 +15,18 @@ class DrawGames {
         const gameRepository = new GameRepository();
 
         try {
+            logger.info(`Consulting user ${userId} is administrator.`);
             const isUserValid = await userRepository.findByAdministrator(userId);
-            let result = false;
 
             if (!isUserValid) {
-                return false;
+                logger.info(`User ${userId} is not administrator...`);
+                return [false, "Error your not administrator in the team, please request the club administrator for create championship"];
             }
 
+            logger.info('Finding teams in championship.');
             const teams = await gameRepository.findByTeamChampionship(gameDTO);
-            result = await this.shuffleGames(teams);
-
-            return result;
+            let result = await this.#shuffleGames(teams);
+            return result;            
         } catch (err) {
             throw new Error(err);
         }
@@ -35,13 +35,15 @@ class DrawGames {
     /**
      * Method for insertition games in database
      */
-    async shuffleGames(teams) {
+    async #shuffleGames(teams) {
         const gameRepository = new GameRepository();
 
         try {
             let shuffledGames = [];
             let result = false;
+            let round = 1;
 
+            logger.info('Initializing shuffle games!');
             for (let i = 0; i < teams.length; i++) {
                 let teamFiltered = teams.filter(item => item != teams[i]);
 
@@ -50,15 +52,21 @@ class DrawGames {
                     game.gameIdChamp = teams[i].TCIDCHAMP;
                     game.gameIdTeam1 = teams[i].TCIDTEAM;
                     game.gameIdTeam2 = teamFiltered[j].TCIDTEAM;
+                    game.gameRound = `${round}`;
                     shuffledGames.push(game);
 
                     result = await gameRepository.create(game);
 
                     if (!result) {
-                        throw new Error(`Error ocurred in insert game ${teams[i].TCIDTEAM} X ${teamFiltered[j].TCIDTEAM}`);
+                        throw new Error(`Error occurred in insert game ${teams[i].TCIDTEAM} X ${teamFiltered[j].TCIDTEAM}`);
                     }
+
+                    round++;
                 }
+                round = 1;
             }
+
+            logger.info(`Games shuffled: ${JSON.stringify(shuffledGames)}`);
 
             return [result, shuffledGames];
         } catch (error) {

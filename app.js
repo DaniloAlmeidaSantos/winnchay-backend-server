@@ -2,8 +2,12 @@ const express = require('express');
 const app = express();
 
 const session = require('express-session');
-const bodyParser  = require('body-parser');
+const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
+
+const Log4js = require('log4js');
+var logger = Log4js.getLogger();
+logger.level = "info";
 
 // parser application/json
 app.use(bodyParser.json());
@@ -19,7 +23,7 @@ app.use(session({
 }));
 
 require("dotenv-safe").config({
-    allowEmptyValues: true
+  allowEmptyValues: true
 });
 
 const championshipGamesController = require('./src/main/controller/ChampionshipGamesController');
@@ -30,5 +34,5 @@ app.use(express.json());
 app.use('/', championshipGamesController);
 
 app.listen(process.env.EXPRESS_PORT, process.env.EXPRESS_HOST, () => {
-    console.log(`WinnChay BackEnd server running in port ${process.env.EXPRESS_PORT}...`)
+  logger.info(`WinnChay BackEnd server running in port ${process.env.EXPRESS_PORT}...`);
 });

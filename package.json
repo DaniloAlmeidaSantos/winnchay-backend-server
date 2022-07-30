@@ -22,6 +22,7 @@
     "express": "^4.18.1",
     "express-session": "^1.17.3",
     "knex": "^2.1.0",
+    "log4js": "^6.6.0",
     "nodemon": "^2.0.19"
   }
 }
