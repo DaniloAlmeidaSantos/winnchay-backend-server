@@ -16,21 +16,20 @@ router.post('/notification/championship/send', async (req, res) => {
 
     try {
         const { teamId, championshipId, message, title } = req.body;
+        
+        notificationDTO.setNotificationMessage = message;
+        notificationDTO.setNotificationChampionshipSender = championshipId;
+        notificationDTO.setNotificationTitle = title;
 
-        notificationDTO.notificationMessage = message;
-        notificationDTO.notificationChampionshipSender = championshipId;
-        notificationDTO.notificationTitle = title;
-
-        const response = notificationService.sendNotificationChampionship(notificationDTO, teamId);
-
+        const response = await notificationService.sendNotificationChampionship(notificationDTO, teamId);
         if (response) {
-            res.status(200);
+            res.status(200).json({message: "Message send success for inbox..."});
+        } else {
+            res.status(400).json({message: "Sending notification failed."});
         }
-
-        res.status(400).json({message: "Sending notification failed."});
     } catch (error) {
-        logger.error(`Error in sending notification`);
-        res.status(500).json({message: "Error in sending notification", error: error});
+        logger.error(`Error in sending notification`);  
+        logger.error(error);
     }
 });
 

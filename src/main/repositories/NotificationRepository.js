@@ -15,6 +15,7 @@ class NotificationRepository {
     async create(notificationDTO = new NotificationDTO()) {
         try {
             logger.info(`Initializing save notification...`);
+            logger.info(JSON.stringify(notificationDTO));
             const result = await db.insert(
                 {
                     NTIDUSERSENDER: notificationDTO.notificationUserSender,
@@ -26,7 +27,7 @@ class NotificationRepository {
                 }
             ).table('WINNNOTIFICATIONS');
 
-            return result[0].lenght > 0;
+            return result.lenght > 0;
         } catch (error) {
             logger.error(`Erro in database for inserting notification`);
             throw new Error(`Error on inserting notification: ${error}`);

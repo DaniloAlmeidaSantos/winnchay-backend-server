@@ -1,5 +1,3 @@
-
-
 class ShowNotification {
 
     async showNotification() {

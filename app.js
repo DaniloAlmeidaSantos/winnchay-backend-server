@@ -27,11 +27,15 @@ require("dotenv-safe").config({
 });
 
 const championshipGamesController = require('./src/main/controller/ChampionshipGamesController');
+const notificationController = require('./src/main/controller/NotificationController');
+const calendarController = require('./src/main/controller/CalendarController');
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
 app.use('/', championshipGamesController);
+app.use('/', notificationController);
+app.use('/', calendarController);
 
 app.listen(process.env.EXPRESS_PORT, process.env.EXPRESS_HOST, () => {
   logger.info(`WinnChay BackEnd server running in port ${process.env.EXPRESS_PORT}...`);

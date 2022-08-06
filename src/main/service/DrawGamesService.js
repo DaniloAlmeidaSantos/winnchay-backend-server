@@ -1,5 +1,5 @@
 const GameDTO = require('../model/dto/GameDTO');
-const UsersRepository = require('../repositories/UsersRepository');
+const ValidateUserAdm = require('./ValidateAdministratorService');
 const GameRepository = require('../repositories/GameRepository');
 const Log4js = require('log4js');
 var logger = Log4js.getLogger();
@@ -11,15 +11,12 @@ class DrawGames {
     * Method for create championship
     * */
     async sortitionGames(gameDTO = new GameDTO(), userId) {
-        const userRepository = new UsersRepository()
         const gameRepository = new GameRepository();
 
         try {
-            logger.info(`Consulting user ${userId} is administrator.`);
-            const isUserValid = await userRepository.findByAdministrator(userId);
+            const isValid = ValidateUserAdm.validateAdministrator(userId);
 
-            if (!isUserValid) {
-                logger.info(`User ${userId} is not administrator...`);
+            if (!isValid) {
                 return [false, "Error your not administrator in the team, please request the club administrator for create championship"];
             }
 

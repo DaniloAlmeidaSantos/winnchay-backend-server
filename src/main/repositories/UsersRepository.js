@@ -39,11 +39,11 @@ class UsersRepository {
      */
     async searchPlayers(teamId) {
         try {
-            const players = await db.where({USUIDTEAM: teamId}).select('USID').table('WINNUSERS');
+            const players = await db.where({USUIDTEAM: teamId}).select('USUID').table('WINNUSERS');
 
-            if (players[0].length > 0) {
-                logger.info(`Players found by team: ${players[0]}`);
-                return players
+            if (players.length > 0) {
+                logger.info(`Players found by team: ${JSON.stringify(players[0])}`);
+                return players;
             }
 
             logger.info(`Players not found by team`);
@@ -62,7 +62,7 @@ class UsersRepository {
      */
     async findById(userId) {
         try {
-            const userFounded = await db.where({USID: userId}).select().table('WINNUSERS');
+            const userFounded = await db.where({USUID: userId}).select().table('WINNUSERS');
 
             if (userFounded[0].length > 0) {
                 logger.info(`User found by team: ${userFounded[0]}`);

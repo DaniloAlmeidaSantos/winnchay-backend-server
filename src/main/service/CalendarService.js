@@ -17,13 +17,14 @@ class CalendarService {
                 return this.#gamesDetails(teamId1, teamId2);
             }
 
-            let response = repository.findCalendar(teamId1);
+            logger.info('Finding calendar in database.');
+            let response = await repository.findCalendar(teamId1);
 
             if (response[0].length > 0) {
                 result = true;    
             }
 
-            return [result, response];            
+            return [result, response[0]];            
         } catch (error) {
             logger.error(`Erro in showing games in calendar`);
             throw new Error(`Error in show games in calendar: ${error}`);
@@ -35,7 +36,7 @@ class CalendarService {
             let result = false;
             let response = repository.detailsGame(teamId, teamId2);
 
-            if (response[0].length > 0) {
+            if (response.length > 0) {
                 result = true;    
             }
 

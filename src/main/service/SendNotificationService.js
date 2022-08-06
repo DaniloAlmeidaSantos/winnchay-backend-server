@@ -11,7 +11,9 @@ class SendNotificationService {
     /**
      * Method to send notify for all players in the team, because team participate in championship
      * 
-     * @param {NotificationDTO} notificationDTO 
+     * @param {NotificationDTO} notificationDTO : Class DTO Notification
+     * @param {BigInteger} teamId : Indeticator the team
+     * @returns 
      */
     async sendNotificationChampionship(notificationDTO = new NotificationDTO(), teamId) {
         const userRepository = new UsersRepository();
@@ -20,16 +22,17 @@ class SendNotificationService {
         try {
             const players = await userRepository.searchPlayers(teamId);
             
-            if (players[0].length <= 0) {
-                logger.info('Players not found');
+            if (players == null) {
+                logger.info(`Not found players in the team ${teamId}`);
                 return false;
             }
-             
+
             logger.info(`Sending notification for players in the team ${teamId}`);
-            for (let i = 0; i < players; i++) {
+            for (let i = 0; i < players.length; i++) {
                 notificationDTO.notificationStatus = "S";
                 notificationDTO.notificationType = "C";
-                notificationDTO.notificationUserDest = players[i].USID;
+                notificationDTO.notificationUserDest = players[i].USUID;
+
                 notficattionRepository.create(notificationDTO);
             }
 
