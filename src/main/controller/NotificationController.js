@@ -5,6 +5,7 @@ var logger = Log4js.getLogger();
 logger.level = "info";
 
 const SendNotificationService = require('../service/SendNotificationService');
+const ShowNotificationService = require('../service/ShowNotificationsService');
 const NotificationDTO = require('../model/dto/NotificationDTO');
 
 /*
@@ -36,8 +37,18 @@ router.post('/notification/championship/send', async (req, res) => {
 /*
 * Path get all notifications for user logged
 * */
-router.get('/notification/:id', async (req, res) => {
+router.get('/notification/:userId', async (req, res) => {
+    const { userId } = req.params.userId;
+    const service = new ShowNotificationService();
 
+    try {
+        const response = await service.showNotification(userId);
+
+        res.status(200).json({notifications: response});
+    } catch (error) {
+        logger.error(`Error to finding notification`);  
+        logger.error(error);
+    }
 });
 
 module.exports = router;

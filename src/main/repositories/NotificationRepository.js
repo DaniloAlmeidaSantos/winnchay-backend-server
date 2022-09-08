@@ -34,6 +34,23 @@ class NotificationRepository {
         }
     }
 
+    /**
+     * Find notifications for users
+     * 
+     * @param {int} userId 
+     * @returns 
+     */
+    async getNotification(userId) {
+        try {
+            logger.info(`Initializing getting notifications for user: ${userId}`);
+            const result = await db.select().where({NIDDEST: userId}).table('WINNNOTIFICATIONS');
+            return result;
+        } catch (error) {
+            logger.error(`Erro in database for selecting notification`);
+            throw new Error(`Error on selecting notification: ${error}`);
+        }
+    }
+
 }
 
 module.exports = NotificationRepository;

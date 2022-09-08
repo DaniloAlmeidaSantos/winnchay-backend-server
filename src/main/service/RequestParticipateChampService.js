@@ -15,7 +15,7 @@ class RequestParticipateChampService {
         const championshipRepository = new ChampionshipRepository();
 
         try {
-            const isInserted = championshipRepository.participateChampionship(teamId, championshipId);
+            const isInserted = await championshipRepository.participateChampionship(teamId, championshipId);
 
             if (isInserted) {
                 const isValid = await ValidateAdministratorService.validateAdministrator(userId);
